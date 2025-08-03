@@ -29,7 +29,7 @@ Micro-Shop API es una solución backend desarrollada con NestJS que gestiona pro
 ## 1. Clonar el repositorio
 
 ```bash
-$ git clone <URL-del-repositorio>
+$ git clone https://github.com/Errold146/micro-shop
 ```
 
 ## 2. Reconstruir los módulos de node
