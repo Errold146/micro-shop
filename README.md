@@ -52,7 +52,7 @@ $ docker-compose up -d
 $ yarn start:dev
 ```
 
-## 6. Ejecutar SEED para insertar datos de prueba en la tabla de productos y la tabla de imágenes  
+## 6. Ejecutar SEED para insertar datos de prueba en la tabla de productos, la tabla de imágenes e inserta usuarios.
 (Cada vez que corra este script se eliminará cualquier dato existente en la base de datos y no se podrá recuperar dicha información)
 
 ```bash
@@ -83,6 +83,18 @@ $ http://localhost:3000/api/seed
     "images": [
       {
         "url": "https://example.com/images/camisa.jpg"
+      }
+    ],
+    user: [
+      {
+        "email": "correo@correo.com",
+        "fullName": "Juan Perez",
+        "password": "password",
+        "roles": [
+          "user",
+          "super-user",
+          "admin"
+        ]
       }
     ]
   }
