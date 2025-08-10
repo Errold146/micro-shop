@@ -1,14 +1,16 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { Repository, type SelectQueryBuilder } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate as isUUID } from 'uuid';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { generateUniqueSlug } from 'src/common/helpers/slug.helper';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
+
 import { ProductImage, Product } from './entities';
-import { PaginatedProductsResponseDto } from './dto/paginated-product-response.dto';
+import type { User } from 'src/auth/entities/user.entity';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateProductDto } from './dto/create-product.dto';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { ProductResponseDto } from './dto/product-response.dto';
+import { generateUniqueSlug } from 'src/common/helpers/slug.helper';
+import { PaginatedProductsResponseDto } from './dto/paginated-product-response.dto';
 
 @Injectable()
 export class ProductsService {
@@ -23,7 +25,7 @@ export class ProductsService {
         private readonly productImageRepository: Repository<ProductImage>
     ){}
 
-    async create(createProductDto: CreateProductDto): Promise<Product> {
+    async create(createProductDto: CreateProductDto, user: User): Promise<Product> {
         try {
             const { images = [], slug, title, tags = [], ...rest } = createProductDto;
             const baseSlug = slug?.trim() || title;
@@ -42,6 +44,7 @@ export class ProductsService {
                 slug: finalSlug,
                 images: images.map( img => this.productImageRepository.create({url: img}) ),
                 ...rest,
+                user
             });
 
             await this.productRepository.save(product);
@@ -110,7 +113,7 @@ export class ProductsService {
         }
     }
 
-    async update(id: string, updateProductDto: UpdateProductDto): Promise<ProductResponseDto> {
+    async update(id: string, updateProductDto: UpdateProductDto, user: User): Promise<ProductResponseDto> {
         try {
             const { images, title, ...rest } = updateProductDto;
 
@@ -146,6 +149,8 @@ export class ProductsService {
                     this.productImageRepository.create({ url })
                 );
             }
+
+            product.user = user
 
             const updated = await this.productRepository.save(product);
 
