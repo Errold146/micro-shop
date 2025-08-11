@@ -1,11 +1,14 @@
 import { BadRequestException, Controller, Get, Param, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { Response } from 'express';
+
 import { FilesService } from './files.service';
 import { fileFilter, fileNamer } from './helpers';
 
+@ApiTags('Files')
 @Controller('files')
 export class FilesController {
     constructor(
@@ -14,6 +17,8 @@ export class FilesController {
     ) {}
 
     @Get('product/:imageName')
+    @ApiResponse({ status: 200, description: 'Image uploaded successfully' })
+    @ApiResponse({ status: 404, description: 'Image not found' })
     findOneImage( 
         @Res() res: Response,
         @Param('imageName') imageName: string 
@@ -23,6 +28,8 @@ export class FilesController {
     }
 
     @Post('product')
+    @ApiResponse({ status: 200, description: 'Image updated successfully' })
+    @ApiResponse({ status: 400, description: 'Error Message' })
     @UseInterceptors(FileInterceptor('file', { 
         fileFilter ,
         // limits: { fileSize: 10000 },
